@@ -22,14 +22,18 @@ final class GameViewController: UIViewController {
     @IBOutlet weak var answerCButton: UIButton!
     @IBOutlet weak var answerDButton: UIButton!
     
+    var mode: Mode = .consistent
+    
+//    private let questionStrategy = QuestionStrategy()
     var currentQuestion = 0
+    var questionsOrder = [Int]()
     var score = 0
     var rightAnswer:UInt32 = 0
     var onGameEnd: ((Int) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        createQuestionStrategy()
         answerAButton.layer.cornerRadius = 10
         answerAButton.tag = 1
         answerBButton.layer.cornerRadius = 10
@@ -47,9 +51,11 @@ final class GameViewController: UIViewController {
             self.onGameEnd?(result)
             self.dismiss(animated: true, completion: nil)
         }
+        questionsOrder = questionStrategy.currentQuestion()
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        currentQuestion = questionsOrder[0]
         nextQuestion()
     }
     
@@ -58,13 +64,11 @@ final class GameViewController: UIViewController {
         if sender.tag == Int(rightAnswer) {
             print("RIGHT!!")
             score += 1
-        }
-        else {
+        }else {
             print("WRONG!!!!!")
         }
         
         if currentQuestion != questions.count {
-            
             nextQuestion()
             
         }else {
@@ -78,9 +82,11 @@ final class GameViewController: UIViewController {
     
     func nextQuestion() {
         
-        questionLabel.text = questions[currentQuestion]
+        let question = questionsOrder[currentQuestion]
         
-        var wrongAnswers = answers[currentQuestion].filter(){$0 != answers[currentQuestion][0]}
+        questionLabel.text = questions[question]
+        
+        var wrongAnswers = answers[question].filter(){$0 != answers[question][0]}
         wrongAnswers.shuffle()
         
         rightAnswer = UInt32.random(in: 1...4)
@@ -88,14 +94,14 @@ final class GameViewController: UIViewController {
         
         var button = UIButton()
         
-        for i in 1...answers[currentQuestion].count {
+        for i in 1...answers[question].count {
             
             button = view.viewWithTag(i) as! UIButton
             
             if i < Int(rightAnswer) {
                 button.setTitle(wrongAnswers[i-1], for: .normal)
             } else if i == Int(rightAnswer) {
-                button.setTitle(answers[currentQuestion][0], for: .normal)
+                button.setTitle(answers[question][0], for: .normal)
             } else {
                 button.setTitle(wrongAnswers[i-2], for: .normal)
             }
@@ -106,4 +112,13 @@ final class GameViewController: UIViewController {
         
     }
 
+    private func createQuestionStrategy() -> QuestionStrategy {
+        switch mode {
+        case .consistent:
+            return ConsistentQuestionStrategy()
+        case .random:
+            return RandomQuestionStrategy()
+        }
+    }
+    
 }

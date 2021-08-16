@@ -14,6 +14,6 @@ let questions = [
 ]
 let answers = [
     ["4", "6", "8", "33"],
-    ["Happy Meal", "Angry Bird", "Little TImmy", "Oki Doki"],
+    ["Happy Meal", "Angry Bird", "Little Timmy", "Oki Doki"],
     ["8", "9", "10", "11"]
 ]
