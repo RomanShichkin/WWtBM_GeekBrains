@@ -51,6 +51,7 @@ final class GameViewController: UIViewController {
             self.onGameEnd?(result)
             self.dismiss(animated: true, completion: nil)
         }
+        
         questionsOrder = questionStrategy.currentQuestion()
     }
     
